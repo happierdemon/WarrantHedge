@@ -3,6 +3,7 @@
     <File Path="01_schema.sql" />
     <File Path="02 seed.sql" />
   </Folder>
+  <Project Path="WarrantHedge.API.Tests/WarrantHedge.API.Tests.csproj" Id="d0ea39d3-dfec-4d90-baae-a7951fbb4f6e" />
   <Project Path="WarrantHedge.API/WarrantHedge.API.csproj" />
   <Project Path="WarrantHedge.WinForm/WarrantHedge.WinForm.csproj" Id="dea74f6c-91ac-4a4e-b5c1-a381e4b2bbbc" />
 </Solution>
