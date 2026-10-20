@@ -1,0 +1,66 @@
+### 把 port 改成 Properties/launchSettings.json 裡 https profile 的 port
+@baseUrl = https://localhost:7293
+@warrantId = 030001
+
+### 1. 權證清單（全部）
+GET {{baseUrl}}/api/warrants
+
+### 2. 權證清單（關鍵字搜尋）
+GET {{baseUrl}}/api/warrants?keyword=03001
+
+### 3. 單一權證
+GET {{baseUrl}}/api/warrants/{{warrantId}}
+
+### 4. 試算：價內
+POST {{baseUrl}}/api/warrants/{{warrantId}}/calculate
+Content-Type: application/json
+
+{ "marketPrice": 100.5 }
+
+### 5. 試算：股價 <= 0 → 預期 400
+POST {{baseUrl}}/api/warrants/{{warrantId}}/calculate
+Content-Type: application/json
+
+{ "marketPrice": 0 }
+
+### 6. 試算：超過 4 位小數 → 預期 400
+POST {{baseUrl}}/api/warrants/{{warrantId}}/calculate
+Content-Type: application/json
+
+{ "marketPrice": 100.12345 }
+
+### 7. 試算：權證不存在 → 預期 404
+POST {{baseUrl}}/api/warrants/XXXXXX/calculate
+Content-Type: application/json
+
+{ "marketPrice": 100 }
+
+### 8. 存檔（第一次）→ 預期 201
+POST {{baseUrl}}/api/warrants/{{warrantId}}/trials
+Content-Type: application/json
+Idempotency-Key: 11111111-2222-3333-4444-555555555555
+
+{ "marketPrice": 100.5 }
+
+### 9. 同一個 Key 重送 → 預期 200 + Header「Idempotent-Replayed: true」，資料不會多一筆
+POST {{baseUrl}}/api/warrants/{{warrantId}}/trials
+Content-Type: application/json
+Idempotency-Key: 11111111-2222-3333-4444-555555555555
+
+{ "marketPrice": 100.5 }
+
+### 10. 同一個 Key、不同股價 → 預期 422
+POST {{baseUrl}}/api/warrants/{{warrantId}}/trials
+Content-Type: application/json
+Idempotency-Key: 11111111-2222-3333-4444-555555555555
+
+{ "marketPrice": 120 }
+
+### 11. 沒帶 Idempotency-Key → 預期 400
+POST {{baseUrl}}/api/warrants/{{warrantId}}/trials
+Content-Type: application/json
+
+{ "marketPrice": 100.5 }
+
+### 12. 最近 10 筆紀錄
+GET {{baseUrl}}/api/warrants/{{warrantId}}/trials
