@@ -8,6 +8,10 @@ USE WarrantHedgeDB;
 GO
 SET NOCOUNT ON;
 
+-- 測試資料的時間基準：台灣時間（與 01_schema.sql 的 Created_Time 預設值一致，
+-- Azure SQL Database 的 GETDATE() 是 UTC，不能直接用）
+DECLARE @Now DATETIME = CONVERT(DATETIME, SYSDATETIMEOFFSET() AT TIME ZONE 'Taipei Standard Time');
+
 DELETE FROM dbo.Warrant_Trial_Log;
 DELETE FROM dbo.Warrant_Master;
 
@@ -48,7 +52,7 @@ SELECT
             ELSE             IIF(w.Strike_Price > p.Market_Price, w.Strike_Price - p.Market_Price, 0)
         END * w.Conversion_Ratio, 4),
     ROUND(w.Position_Qty * w.Conversion_Ratio * d.Delta, 2),
-    DATEADD(MINUTE, -15 * s.Seq, GETDATE()),
+    DATEADD(MINUTE, -15 * s.Seq, @Now),
     NEWID()
 FROM dbo.Warrant_Master AS w
 CROSS JOIN (VALUES (1, 0.90), (2, 1.00), (3, 1.10)) AS s (Seq, Factor)

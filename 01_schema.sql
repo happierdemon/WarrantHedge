@@ -35,7 +35,11 @@ CREATE TABLE dbo.Warrant_Trial_Log (
     Market_Price DECIMAL(18,4)     NOT NULL,
     Theory_Price DECIMAL(18,4)     NOT NULL,
     Hedge_Qty    DECIMAL(18,2)     NOT NULL,
-    Created_Time DATETIME          NOT NULL CONSTRAINT DF_Trial_Log_Created DEFAULT (GETDATE()),
+    -- 存檔時間一律為台灣時間：GETDATE() 取的是 DB 伺服器時區，
+    -- 本機 SQL Server 是台灣時間，但 Azure SQL Database 固定為 UTC，會差 8 小時，
+    -- 所以明確轉換成 Taipei Standard Time，本機與雲端結果一致（需 SQL Server 2016 以上）
+    Created_Time DATETIME          NOT NULL CONSTRAINT DF_Trial_Log_Created
+        DEFAULT (CONVERT(DATETIME, SYSDATETIMEOFFSET() AT TIME ZONE 'Taipei Standard Time')),
     Request_ID   UNIQUEIDENTIFIER  NOT NULL,  -- 擴充欄位：API 冪等鍵 (Idempotency-Key)
     CONSTRAINT PK_Warrant_Trial_Log     PRIMARY KEY CLUSTERED (Log_ID),
     CONSTRAINT FK_Trial_Log_Warrant     FOREIGN KEY (Warrant_ID) REFERENCES dbo.Warrant_Master (Warrant_ID),

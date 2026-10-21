@@ -38,7 +38,8 @@ public class WarrantDbContext(DbContextOptions<WarrantDbContext> options) : DbCo
             e.Property(x => x.HedgeQty).HasColumnName("Hedge_Qty").HasPrecision(18, 2);
             e.Property(x => x.CreatedTime).HasColumnName("Created_Time")
                 .HasColumnType("datetime")
-                .HasDefaultValueSql("GETDATE()")   // 時間以 DB 伺服器為準，不信任 Client 時間
+                // 時間由 DB 產生，不信任 Client 時間；與 01_schema.sql 的預設值保持一致（台灣時間）
+                .HasDefaultValueSql("CONVERT(DATETIME, SYSDATETIMEOFFSET() AT TIME ZONE 'Taipei Standard Time')")
                 .ValueGeneratedOnAdd();
             e.Property(x => x.RequestId).HasColumnName("Request_ID");
 
