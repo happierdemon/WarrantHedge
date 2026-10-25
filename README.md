@@ -104,11 +104,11 @@ WarrantHedge/
 
 ```json
 "ConnectionStrings": {
-  "WarrantHedgeDb": "Server=localhost;Database=WarrantHedgeDB;Trusted_Connection=True;TrustServerCertificate=True;"
+  "WarrantHedgeDb": "Data Source=.;Initial Catalog=WarrantHedgeDB;Integrated Security=True;Trust Server Certificate=True"
 }
 ```
 
-若使用 SQL Server Express，將 `Server=localhost` 改為 `Server=localhost\SQLEXPRESS`。
+若使用 SQL Server Express，將 `Data Source=.` 改為 `Data Source=.\SQLEXPRESS`。
 
 ### 3. 設定 WinForm 的 API 網址
 
